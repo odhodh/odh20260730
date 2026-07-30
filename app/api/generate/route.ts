@@ -1,6 +1,7 @@
 import type { ResearchState } from "../../types";
 
-export const runtime = "edge";
+// Node.js 서버리스 함수에서 환경 변수를 안전하게 읽습니다.
+export const runtime = "nodejs";
 
 const perspectives = ["정의", "척도", "범위", "차이", "변수", "조건", "수단", "모름", "오류", "예외"];
 
