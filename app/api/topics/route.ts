@@ -11,15 +11,26 @@ type TopicInput = {
 
 function config() {
   const url = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)?.replace(/\/$/, "");
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  let key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key && process.env.SUPABASE_SECRET_KEYS) {
+    try {
+      key = JSON.parse(process.env.SUPABASE_SECRET_KEYS).default;
+    } catch {
+      throw new Error("SUPABASE_SECRET_KEYS 형식이 올바르지 않습니다.");
+    }
+  }
   if (!url || !key) {
-    throw new Error("Supabase URL 또는 서버 전용 Secret Key가 연결되지 않았습니다.");
+    throw new Error("SUPABASE_SECRET_KEY 또는 SUPABASE_SERVICE_ROLE_KEY가 연결되지 않았습니다.");
   }
   return { url, key };
 }
 
 function headers(key: string) {
-  return { apikey: key, Authorization: `Bearer ${key}`, "content-type": "application/json" };
+  const base = { apikey: key, "content-type": "application/json" };
+  // 새 sb_secret_ 키는 JWT가 아니므로 Bearer 헤더에 넣지 않습니다.
+  return key.startsWith("sb_")
+    ? base
+    : { ...base, Authorization: `Bearer ${key}` };
 }
 
 export async function GET() {

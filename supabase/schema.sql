@@ -16,4 +16,4 @@ create index if not exists student_topics_created_at_idx
 alter table public.student_topics enable row level security;
 
 -- 브라우저는 이 테이블에 직접 접근하지 않습니다.
--- 서버 API가 SUPABASE_SERVICE_ROLE_KEY를 사용해 저장과 조회를 담당합니다.
+-- 서버 API가 SUPABASE_SECRET_KEY 또는 SUPABASE_SERVICE_ROLE_KEY로 저장과 조회를 담당합니다.
