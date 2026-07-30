@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AppHeader } from "./components/AppHeader";
 import { ArrowIcon, CheckIcon, CloseIcon, KeyIcon, SettingsIcon, SparkIcon } from "./components/Icons";
@@ -77,7 +78,11 @@ export default function Home() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "콘텐츠를 생성하지 못했습니다.");
-      setStep(nextStep); setResult(data.result);
+      setStep(nextStep);
+      setResult(data.result);
+      if (nextStep === 5 && typeof data.result === "string") {
+        setState({ ...nextState, finalReport: data.result });
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) { setError(e instanceof Error ? e.message : "잠시 후 다시 시도해 주세요."); }
     finally { setLoading(false); }
@@ -101,7 +106,7 @@ export default function Home() {
   }
 
   async function saveResult() {
-    const finalReport = typeof result === "string" ? result : state.finalReport;
+    const finalReport = state.finalReport || (typeof result === "string" ? result : "");
     if (!finalReport) return;
     setLoading(true); setError("");
     try {
@@ -111,6 +116,7 @@ export default function Home() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "저장하지 못했습니다.");
+      if (!data.topic?.id) throw new Error("저장 결과를 확인하지 못했습니다. 다시 시도해 주세요.");
       setSaved(true);
     } catch (e) { setError(e instanceof Error ? e.message : "저장 중 오류가 발생했습니다."); }
     finally { setLoading(false); }
@@ -180,7 +186,7 @@ export default function Home() {
             {!loading && step === 2 && <div className="path-grid">{(result as PathOption[]).map((item, i) => <button className="choice-card path-card" key={item.title} onClick={() => choosePath(item)}><span className="path-label">PATH {i+1}</span><h2>{item.title}</h2><blockquote>{item.question}</blockquote><p>{item.description}</p><span className="card-action">이 길로 탐구하기 <ArrowIcon size={16}/></span></button>)}</div>}
             {!loading && step === 3 && (() => { const f = result as Framework; return <div className="framework-card"><div className="framework-row question"><span>무엇을 묻나</span><h2><em>{f.question}</em></h2></div><div className="framework-row"><span>어떻게 알아보나</span><p>{f.method}</p></div><div className="framework-row"><span>무엇을 만나게 되나</span><p>{f.insight}</p></div><button className="button primary" onClick={acceptFramework}>이 틀로 더 깊이 <ArrowIcon size={18}/></button></div>; })()}
             {!loading && step === 4 && <div className="micro-grid">{(result as MicroTopic[]).map((item, i) => <button className="choice-card micro-card" key={item.title} onClick={() => chooseMicro(item)}><span className="micro-num">{i+1}</span><h2>{item.title}</h2><p>{item.description}</p><span className="card-action">최종 보고서로 <ArrowIcon size={16}/></span></button>)}</div>}
-            {!loading && step === 5 && typeof result === "string" && <><div className="report-paper"><MarkdownReport markdown={result}/></div><div className="save-bar"><div><h3>{saved ? "Supabase에 안전하게 저장됐어요." : "이 탐구를 내 기록으로 남길까요?"}</h3><p>{saved ? "저장 내역에서 언제든 다시 열어볼 수 있습니다." : "중간 과정은 저장하지 않고, 완성된 보고서만 저장합니다."}</p></div><button className={`button ${saved ? "success" : "primary"}`} onClick={saveResult} disabled={saved || loading}>{saved ? <><CheckIcon size={18}/> 저장 완료</> : "결과를 Supabase에 저장"}</button></div></>}
+            {!loading && step === 5 && typeof result === "string" && <><div className="report-paper"><MarkdownReport markdown={result}/></div><div className="save-bar"><div><h3>{saved ? "Supabase에 안전하게 저장됐어요." : "이 탐구를 내 기록으로 남길까요?"}</h3><p>{saved ? "저장 내역에서 지금 바로 확인할 수 있습니다." : "중간 과정은 저장하지 않고, 완성된 보고서만 저장합니다."}</p></div>{saved ? <div className="save-actions"><span className="button success"><CheckIcon size={18}/> 저장 완료</span><Link className="button saved-link" href="/history">저장 내역 보기 <ArrowIcon size={16}/></Link></div> : <button className="button primary" onClick={saveResult} disabled={loading}>결과를 Supabase에 저장</button>}</div></>}
           </section>
         )}
         {error && <div className="toast error" role="alert">{error}<button onClick={() => setError("")} aria-label="알림 닫기"><CloseIcon size={16}/></button></div>}

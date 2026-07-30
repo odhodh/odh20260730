@@ -1,5 +1,6 @@
 // Node.js 서버리스 함수에서 환경 변수를 안전하게 읽습니다.
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 type TopicInput = {
   student_id: string;

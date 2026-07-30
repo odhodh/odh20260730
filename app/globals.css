@@ -233,6 +233,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--navy); box-shado
 .save-bar { max-width: 940px; margin: 18px auto 0; display: flex; justify-content: space-between; align-items: center; background: var(--navy); color: white; padding: 24px 28px; }
 .save-bar h3 { margin: 0 0 5px; font-size: 16px; }
 .save-bar p { margin: 0; font-size: 12px; color: #c5d0d2; }
+.save-actions { display: flex; gap: 8px; align-items: center; }
+.saved-link { color: #1c1c1c; background: #f7f4ed; }
+.saved-link:hover { opacity: .82; }
 .loading-panel, .empty-state { min-height: 300px; display: grid; place-items: center; align-content: center; text-align: center; color: var(--muted); }
 .loading-panel h3 { color: var(--ink); margin: 18px 0 0; }
 .loading-panel p { margin: 8px 0; }
@@ -314,6 +317,7 @@ footer span { font-family: "Gowun Batang", serif; color: var(--ink); font-weight
   .report-paper { padding: 42px 25px; }
   .markdown-report h1 { font-size: 25px; }
   .save-bar { align-items: stretch; flex-direction: column; gap: 17px; }
+  .save-actions { align-items: stretch; flex-direction: column; }
   footer p { display: none; }
   .history-shell { width: calc(100% - 28px); padding-top: 45px; }
   .history-toolbar { gap: 10px; }
